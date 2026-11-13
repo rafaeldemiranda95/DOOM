@@ -1,0 +1,10 @@
+# IWADs (dados do jogo — não versionar)
+wad/*.wad
+wad/*.WAD
+wad/*.zip
+!wad/.gitkeep
+
+# Artefatos de build locais
+linuxdoom-1.10/linux/
+sndserv/linux/
+*.o
