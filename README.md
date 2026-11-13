@@ -57,11 +57,46 @@ docker run --rm -p 8080:8080 -v "${PWD}/wad:/wad:ro" linuxdoom:local
 
 Abra: [http://localhost:8080/vnc.html?autoconnect=1&resize=scale](http://localhost:8080/vnc.html?autoconnect=1&resize=scale)
 
-Controles: setas = mover, `Ctrl` = atirar, `Espaço` = usar, `Esc` = menu.
+Clique na área do jogo para o teclado ir para o Doom (não para o noVNC).
 
-Sem argumentos extras, o container inicia em **E1M1** (`-skill 3 -warp 1 1`) para evitar demos do IWAD 1.8 (incompatíveis com o engine 1.10).
+Sem argumentos extras, o container inicia em **E1M1** (`-2 -skill 3 -warp 1 1`) para evitar demos do IWAD 1.8 (incompatíveis com o engine 1.10).
 
 No Linux: `scripts/fetch-shareware-wad.sh`.
+
+### Como jogar (controles padrão)
+
+Bindings padrão do LinuxDoom (`m_misc.c` / teclado X11):
+
+| Tecla | Ação |
+| --- | --- |
+| `↑` | Andar para frente |
+| `↓` | Andar para trás |
+| `←` / `→` | Girar |
+| `,` | Strafe esquerda |
+| `.` | Strafe direita |
+| `Alt` | Segurar para strafe com as setas |
+| `Shift` | Correr |
+| `Ctrl` | Atirar |
+| `Espaço` | Usar (abrir portas / interruptores) |
+| `1`–`7` | Trocar arma |
+| `Tab` | Mapa |
+| `Esc` | Menu |
+| `Enter` | Confirmar no menu |
+| `Pause` | Pausar |
+| `F1` | Ajuda |
+| `F2` | Salvar |
+| `F3` | Carregar |
+| `F4` | Volume de som |
+| `F5` | Detalhe gráfico |
+| `F6` | Quick save |
+| `F7` | Fim de jogo |
+| `F8` | Mensagens |
+| `F9` | Quick load |
+| `F10` | Sair |
+| `F11` | Gamma |
+| `-` / `=` | Diminuir / aumentar tamanho da tela |
+
+No noVNC, `Ctrl` e `Alt` às vezes são capturados pelo browser — se atirar/strafe falhar, clique de novo no canvas do jogo.
 
 ## Limitações
 
