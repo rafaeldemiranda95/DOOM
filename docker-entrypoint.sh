@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# Evita morte do linuxxdoom (exit 141) quando o sndserver OSS já morreu:
+# atirar (Ctrl) escrevia no pipe → SIGPIPE → container cai → noVNC desconecta.
+trap '' PIPE
+
 IWAD=""
 for f in doom1.wad doom.wad doom2.wad doomu.wad plutonia.wad tnt.wad; do
   if [ -f "/wad/$f" ]; then
@@ -15,6 +19,9 @@ if [ -z "$IWAD" ]; then
 fi
 
 ln -sfn "/wad/$IWAD" "/doom/$IWAD"
+
+# Não inicia sndserver (/dev/dsp inexistente). Sem isso o pipe quebra no 1º tiro.
+rm -f /doom/sndserver
 
 export DISPLAY=:99
 export HOME="${HOME:-/root}"

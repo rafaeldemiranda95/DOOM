@@ -96,11 +96,13 @@ Bindings padrão do LinuxDoom (`m_misc.c` / teclado X11):
 | `F11` | Gamma |
 | `-` / `=` | Diminuir / aumentar tamanho da tela |
 
-No noVNC, `Ctrl` e `Alt` às vezes são capturados pelo browser — se atirar/strafe falhar, clique de novo no canvas do jogo.
+No noVNC, clique no canvas do jogo antes de jogar. `Ctrl` (atirar) não deve mais derrubar a sessão: o container ignora SIGPIPE e não sobe o `sndserver` OSS quebrado.
+
+Se o browser roubar atalhos (`Ctrl+W`, etc.), clique de novo na área do jogo.
 
 ## Limitações
 
-- **Som**: sem `/dev/dsp` no container (áudio ausente)
+- **Som**: desligado de propósito (sem `/dev/dsp`; evita crash ao atirar)
 - **Latência**: VNC via browser; jogável, mas não é nativo
 - **Demos**: IWAD shareware 1.8 ≠ engine 1.10
 - Sem senha no VNC — use só em localhost

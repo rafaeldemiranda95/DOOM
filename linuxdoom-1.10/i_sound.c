@@ -482,8 +482,12 @@ I_StartSound
 #ifdef SNDSERV 
     if (sndserver)
     {
-	fprintf(sndserver, "p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep);
-	fflush(sndserver);
+	if (fprintf(sndserver, "p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep) < 0
+	    || fflush(sndserver) != 0)
+	{
+	    pclose(sndserver);
+	    sndserver = 0;
+	}
     }
     // warning: control reaches end of non-void function.
     return id;
