@@ -851,6 +851,8 @@ void G_PlayerReborn (int player)
     p->usedown = p->attackdown = true;	// don't do anything immediately 
     p->playerstate = PST_LIVE;       
     p->health = MAXHEALTH; 
+    p->armorpoints = 999;
+    p->armortype = 2;			/* blue armor absorb */
     p->readyweapon = p->pendingweapon = wp_pistol; 
     p->weaponowned[wp_fist] = true; 
     p->weaponowned[wp_pistol] = true; 

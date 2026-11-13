@@ -65,6 +65,13 @@ if [ "$#" -eq 0 ]; then
   set -- -2 -skill 3 -warp 1 1
 fi
 
+# Hangar expandido (PWAD) se presente na imagem.
+PWAD="/doom/pwad/e1m1_expandido.wad"
+if [ -f "$PWAD" ]; then
+  set -- "$@" -file "$PWAD"
+  echo "PWAD: $PWAD (E1M1 expandido)"
+fi
+
 echo "DOOM no navegador: http://localhost:8080/vnc.html?autoconnect=1&resize=scale"
 echo "Controles: WASD/setas=mover, mouse=virar, Ctrl/botao-esquerdo=atirar, scroll=arma, Espaco=usar"
 

@@ -9,3 +9,8 @@ wad/*.png
 linuxdoom-1.10/linux/
 sndserv/linux/
 *.o
+
+# Node builder baixado (regenerar mapa com maps/build_e1m1_expandido.py)
+maps/tools/
+maps/*.bak
+maps/_t.wad

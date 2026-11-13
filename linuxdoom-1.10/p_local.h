@@ -30,7 +30,7 @@
 #define FLOATSPEED		(FRACUNIT*4)
 
 
-#define MAXHEALTH		100
+#define MAXHEALTH		999
 #define VIEWHEIGHT		(41*FRACUNIT)
 
 // mapblocks are used to check movement

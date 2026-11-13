@@ -54,6 +54,7 @@ WORKDIR /doom
 COPY --from=build /src/linuxdoom-1.10/linux/linuxxdoom /doom/linuxxdoom
 COPY --from=build /src/sndserv/linux/sndserver /doom/sndserver
 COPY docker-entrypoint.sh /doom/docker-entrypoint.sh
+COPY maps/e1m1_expandido.wad /doom/pwad/e1m1_expandido.wad
 
 RUN sed -i 's/\r$//' /doom/docker-entrypoint.sh \
  && chmod +x /doom/linuxxdoom /doom/sndserver /doom/docker-entrypoint.sh

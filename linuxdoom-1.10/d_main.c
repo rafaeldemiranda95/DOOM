@@ -1034,9 +1034,7 @@ void D_DoomMain (void)
 	};
 	int i;
 	
-	if ( gamemode == shareware)
-	    I_Error("\nYou cannot -file with the shareware "
-		    "version. Register!");
+	/* Fork: allow -file with shareware so local PWADs (e.g. expanded E1M1) load. */
 
 	// Check for fake IWAD with right name,
 	// but w/o all the lumps of the registered version. 

@@ -1,5 +1,7 @@
 # DOOM (Linux source) + Docker + navegador
 
+> **Branch de experimentação** (`feat/e1m1-expandido`): só para testar ideias (mapa expandido, vida/armadura altas, etc.). Não é a linha estável do projeto — use `master` para o comportamento padrão.
+
 Código-fonte original do DOOM (id Software, release de 1997, GPL-2.0), com build e execução via Docker. O jeito mais fácil de jogar neste fork é pelo **navegador** (noVNC).
 
 A nota histórica de John Carmack continua em [`README.TXT`](README.TXT).
@@ -60,6 +62,18 @@ Abra: [http://localhost:8080/vnc.html?autoconnect=1&resize=scale](http://localho
 Clique na área do jogo para o teclado ir para o Doom (não para o noVNC).
 
 Sem argumentos extras, o container inicia em **E1M1** (`-2 -skill 3 -warp 1 1`) para evitar demos do IWAD 1.8 (incompatíveis com o engine 1.10).
+
+### Hangar expandido (E1M1)
+
+Este fork inclui o PWAD [`maps/e1m1_expandido.wad`](maps/e1m1_expandido.wad): o Hangar original ganha alas de armazenamento, arsenal, alojamento e pátio técnico, com mais monstros e itens. O entrypoint carrega o PWAD automaticamente. Documentação do level design: [`docs/e1m1-level-design.md`](docs/e1m1-level-design.md).
+
+Para regenerar o mapa (Python + omgifol + AJBSP):
+
+```powershell
+py -m pip install omgifol
+py maps\build_e1m1_expandido.py
+docker build -t linuxdoom:local .
+```
 
 No Linux: `scripts/fetch-shareware-wad.sh`.
 
