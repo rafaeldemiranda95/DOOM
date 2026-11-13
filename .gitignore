@@ -2,6 +2,7 @@
 wad/*.wad
 wad/*.WAD
 wad/*.zip
+wad/*.png
 !wad/.gitkeep
 
 # Artefatos de build locais

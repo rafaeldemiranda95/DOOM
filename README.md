@@ -1,8 +1,27 @@
-# DOOM (Linux source) + Docker
+# DOOM (Linux source) + Docker + navegador
 
-Código-fonte original do DOOM (id Software, release de 1997, GPL-2.0), com build e execução via Docker no Linux moderno.
+Código-fonte original do DOOM (id Software, release de 1997, GPL-2.0), com build e execução via Docker. O jeito mais fácil de jogar neste fork é pelo **navegador** (noVNC).
 
 A nota histórica de John Carmack continua em [`README.TXT`](README.TXT).
+
+## Análise rápida
+
+| Peça | Papel |
+| --- | --- |
+| `linuxxdoom` | Engine original + patch **TrueColor** (cores corretas no browser) |
+| `Xvfb` | Display virtual 24 bpp |
+| `x11vnc` | Espelha o Xvfb em VNC (`:5900`) |
+| `websockify` + `noVNC` | Expõe o VNC no browser em `http://localhost:8080` |
+| `wad/doom1.wad` | IWAD (dados do jogo; não vai na imagem) |
+
+```mermaid
+flowchart LR
+  browser[Navegador] -->|HTTP 8080| novnc[noVNC websockify]
+  novnc -->|VNC 5900| x11vnc[x11vnc]
+  x11vnc --> xvfb[Xvfb 24bpp]
+  xvfb --> doom[linuxxdoom]
+  doom --> iwad["/wad/doom1.wad"]
+```
 
 ## Estrutura
 
@@ -14,54 +33,44 @@ A nota histórica de John Carmack continua em [`README.TXT`](README.TXT).
 | `wad/` | IWAD local (não versionado) |
 | `scripts/` | Download do shareware `doom1.wad` |
 
-O repositório **não inclui** dados do jogo. É necessário um IWAD (`doom1.wad`, `doom.wad`, `doom2.wad`, etc.).
+## O que este fork adiciona
 
-## O que foi feito neste fork
-
-- `Dockerfile` multi-stage (Debian Bookworm)
-- Build **32-bit** (`-m32`) — o código original assume ponteiros de 32 bits
-- Patches aplicados só na imagem: `errno.h`, remoção de `values.h`, libs X11 modernas
-- Runtime headless com **Xvfb 8 bpp** (o `i_video.c` original exige PseudoColor 256 cores)
-- Entrypoint que liga o IWAD montado em `/wad` e sobe o jogo
+- `Dockerfile` multi-stage (Debian Bookworm), build **32-bit** (`-m32`)
+- Patches só na imagem: `errno.h`, remoção de `values.h`, libs X11 modernas
+- Patch TrueColor em `i_video.c` (paleta 8-bit → RGB no blit)
+- Runtime com **Xvfb 24 bpp** + **x11vnc** + **noVNC**
+- Entrypoint que monta o IWAD e sobe a stack (escala `-2` por padrão)
 - Script para baixar o shareware legal `doom1.wad` (ibiblio, v1.8)
 
-## Requisitos
-
-- Docker Desktop (Windows/macOS) ou Docker Engine (Linux)
-- IWAD em `wad/` (use o script abaixo se não tiver um)
-
-## Uso
+## Jogar no navegador
 
 ```powershell
-# 1) Baixar shareware (opcional, se ainda não tiver IWAD)
+# 1) IWAD (só na primeira vez)
 powershell -ExecutionPolicy Bypass -File .\scripts\fetch-shareware-wad.ps1
 
 # 2) Build
 docker build -t linuxdoom:local .
 
-# 3) Run (smoke test headless com Xvfb)
-docker run --rm -v "${PWD}/wad:/wad:ro" linuxdoom:local
+# 3) Run (expõe noVNC)
+docker run --rm -p 8080:8080 -v "${PWD}/wad:/wad:ro" linuxdoom:local
 ```
 
-Sem argumentos extras, o container inicia em **E1M1** (`-skill 3 -warp 1 1`). Isso evita as demos do IWAD 1.8, incompatíveis com o engine 1.10.
+Abra: [http://localhost:8080/vnc.html?autoconnect=1&resize=scale](http://localhost:8080/vnc.html?autoconnect=1&resize=scale)
 
-Exemplos:
+Controles: setas = mover, `Ctrl` = atirar, `Espaço` = usar, `Esc` = menu.
 
-```powershell
-# Mesmo smoke test, explícito
-docker run --rm -v "${PWD}/wad:/wad:ro" linuxdoom:local -skill 3 -warp 1 1
+Sem argumentos extras, o container inicia em **E1M1** (`-skill 3 -warp 1 1`) para evitar demos do IWAD 1.8 (incompatíveis com o engine 1.10).
 
-# Menu título (demos do WAD 1.8 vão falhar com "different game version")
-docker run --rm -v "${PWD}/wad:/wad:ro" linuxdoom:local -warp 1 1
-```
+No Linux: `scripts/fetch-shareware-wad.sh`.
 
-No Linux, o script equivalente é `scripts/fetch-shareware-wad.sh`.
+## Limitações
 
-## Limitações conhecidas
+- **Som**: sem `/dev/dsp` no container (áudio ausente)
+- **Latência**: VNC via browser; jogável, mas não é nativo
+- **Demos**: IWAD shareware 1.8 ≠ engine 1.10
+- Sem senha no VNC — use só em localhost
 
-- **Som**: sem `/dev/dsp` no container; o `sndserver` sobe, mas o áudio falha (esperado)
-- **Janela no host Windows**: PseudoColor 8-bit é frágil com VcXsrv; o fluxo suportado aqui é headless via Xvfb
-- **Demos**: IWAD shareware 1.8 ≠ engine 1.10 → demos embutidas não tocam
+Se as cores aparecerem verdes/erradas, atualize a imagem (patch TrueColor) e use Xvfb 24 bpp — o PseudoColor 8-bit puro quebra no noVNC.
 
 ## Licença
 

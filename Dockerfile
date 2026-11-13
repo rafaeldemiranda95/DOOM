@@ -1,4 +1,4 @@
-# Linux DOOM 1.10 — build 32-bit + runtime com Xvfb 8-bit (PseudoColor)
+# Linux DOOM 1.10 — build 32-bit + runtime Xvfb 8-bit + noVNC (browser)
 FROM debian:bookworm-slim AS build
 
 RUN dpkg --add-architecture i386 \
@@ -43,7 +43,12 @@ RUN dpkg --add-architecture i386 \
     xvfb \
     xauth \
     x11-utils \
-    && rm -rf /var/lib/apt/lists/*
+    x11vnc \
+    novnc \
+    websockify \
+    python3 \
+    && rm -rf /var/lib/apt/lists/* \
+ && ln -sfn /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 
 WORKDIR /doom
 COPY --from=build /src/linuxdoom-1.10/linux/linuxxdoom /doom/linuxxdoom
@@ -55,8 +60,10 @@ RUN sed -i 's/\r$//' /doom/docker-entrypoint.sh \
 
 ENV HOME=/root \
     DOOMWADDIR=/doom \
-    DISPLAY=:99
+    DISPLAY=:99 \
+    XVFB_GEOM=640x400x24
 
 VOLUME ["/wad"]
+EXPOSE 8080
 
 ENTRYPOINT ["/doom/docker-entrypoint.sh"]

@@ -14,14 +14,22 @@ if [ -z "$IWAD" ]; then
   exit 1
 fi
 
-# IWAD em /doom junto com linuxxdoom/sndserver (DOOMWADDIR aponta para cá)
 ln -sfn "/wad/$IWAD" "/doom/$IWAD"
 
-# Xvfb em 8 bpp PseudoColor — exigência do i_video.c original
-Xvfb :99 -screen 0 640x480x8 -ac +extension MIT-SHM >/tmp/xvfb.log 2>&1 &
+export DISPLAY=:99
+export HOME="${HOME:-/root}"
+export DOOMWADDIR=/doom
+
+# 24-bit TrueColor; 640x400 casa com escala -2 do Doom (320x200*2)
+XVFB_GEOM="${XVFB_GEOM:-640x400x24}"
+
+Xvfb :99 -screen 0 "$XVFB_GEOM" -ac +extension MIT-SHM >/tmp/xvfb.log 2>&1 &
 XVFB_PID=$!
 
 cleanup() {
+  kill "$DOOM_PID" 2>/dev/null || true
+  kill "$NOVNC_PID" 2>/dev/null || true
+  kill "$X11VNC_PID" 2>/dev/null || true
   kill "$XVFB_PID" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
@@ -35,15 +43,24 @@ while [ "$i" -lt 50 ]; do
   sleep 0.1
 done
 
-export DISPLAY=:99
-export HOME="${HOME:-/root}"
-export DOOMWADDIR=/doom
+x11vnc -display :99 -forever -shared -rfbport 5900 -nopw -xkb -repeat \
+  -noxdamage -ncache 0 >/tmp/x11vnc.log 2>&1 &
+X11VNC_PID=$!
+
+websockify --web=/usr/share/novnc/ 8080 localhost:5900 >/tmp/novnc.log 2>&1 &
+NOVNC_PID=$!
 
 cd /doom
 
-# Sem args: inicia E1M1 direto (IWAD 1.8 tem demos incompatíveis com engine 1.10)
+# -2 escala 2x (640x400). Sem args extras: E1M1 direto.
 if [ "$#" -eq 0 ]; then
-  set -- -skill 3 -warp 1 1
+  set -- -2 -skill 3 -warp 1 1
 fi
 
-exec ./linuxxdoom "$@"
+echo "DOOM no navegador: http://localhost:8080/vnc.html?autoconnect=1&resize=scale"
+echo "Controles: setas=mover, Ctrl=atirar, Espaco=usar, Esc=menu"
+
+./linuxxdoom "$@" &
+DOOM_PID=$!
+
+wait "$DOOM_PID"
