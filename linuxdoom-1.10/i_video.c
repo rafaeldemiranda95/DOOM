@@ -218,6 +218,15 @@ void I_GetEvent(void)
 	// fprintf(stderr, "ku");
 	break;
       case ButtonPress:
+	/* Mouse wheel (X11 Button4/5) → next/prev weapon */
+	if (X_event.xbutton.button == Button4
+	    || X_event.xbutton.button == Button5)
+	{
+	    extern int mouse_weapon_cycle;
+	    mouse_weapon_cycle =
+		(X_event.xbutton.button == Button4) ? 1 : -1;
+	    break;
+	}
 	event.type = ev_mouse;
 	event.data1 =
 	    (X_event.xbutton.state & Button1Mask)
@@ -231,6 +240,9 @@ void I_GetEvent(void)
 	// fprintf(stderr, "b");
 	break;
       case ButtonRelease:
+	if (X_event.xbutton.button == Button4
+	    || X_event.xbutton.button == Button5)
+	    break;
 	event.type = ev_mouse;
 	event.data1 =
 	    (X_event.xbutton.state & Button1Mask)
@@ -815,8 +827,10 @@ void I_InitGraphics(void)
     else
 	displayname = 0;
 
-    // check if the user wants to grab the mouse (quite unnice)
-    grabMouse = !!M_CheckParm("-grabmouse");
+    // Grab mouse by default (turn + fire). Disable with -nograbmouse.
+    grabMouse = !M_CheckParm("-nograbmouse");
+    if (M_CheckParm("-grabmouse"))
+	grabMouse = true;
 
     // check for command-line geometry
     if ( (pnum=M_CheckParm("-geom")) ) // suggest parentheses around assignment
@@ -898,7 +912,9 @@ void I_InitGraphics(void)
     attribs.event_mask =
 	KeyPressMask
 	| KeyReleaseMask
-	// | PointerMotionMask | ButtonPressMask | ButtonReleaseMask
+	| PointerMotionMask
+	| ButtonPressMask
+	| ButtonReleaseMask
 	| ExposureMask;
 
     attribs.colormap = X_cmap;

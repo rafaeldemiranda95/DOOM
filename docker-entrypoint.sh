@@ -60,12 +60,13 @@ NOVNC_PID=$!
 cd /doom
 
 # -2 escala 2x (640x400). Sem args extras: E1M1 direto.
+# Mouse: grab ativo por padrão (virar + botão esquerdo atira).
 if [ "$#" -eq 0 ]; then
   set -- -2 -skill 3 -warp 1 1
 fi
 
 echo "DOOM no navegador: http://localhost:8080/vnc.html?autoconnect=1&resize=scale"
-echo "Controles: setas=mover, Ctrl=atirar, Espaco=usar, Esc=menu"
+echo "Controles: WASD/setas=mover, mouse=virar, Ctrl/botao-esquerdo=atirar, scroll=arma, Espaco=usar"
 
 ./linuxxdoom "$@" &
 DOOM_PID=$!

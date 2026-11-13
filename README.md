@@ -69,14 +69,17 @@ Bindings padrão do LinuxDoom (`m_misc.c` / teclado X11):
 
 | Tecla | Ação |
 | --- | --- |
-| `↑` | Andar para frente |
-| `↓` | Andar para trás |
+| `↑` / `W` | Andar para frente |
+| `↓` / `S` | Andar para trás |
 | `←` / `→` | Girar |
-| `,` | Strafe esquerda |
-| `.` | Strafe direita |
+| `A` / `,` | Strafe esquerda |
+| `D` / `.` | Strafe direita |
 | `Alt` | Segurar para strafe com as setas |
 | `Shift` | Correr |
 | `Ctrl` | Atirar |
+| Mouse (horizontal) | Virar o personagem |
+| Botão esquerdo do mouse | Atirar |
+| Scroll do mouse | Trocar arma (próxima / anterior) |
 | `Espaço` | Usar (abrir portas / interruptores) |
 | `1`–`7` | Trocar arma |
 | `Tab` | Mapa |
@@ -96,9 +99,11 @@ Bindings padrão do LinuxDoom (`m_misc.c` / teclado X11):
 | `F11` | Gamma |
 | `-` / `=` | Diminuir / aumentar tamanho da tela |
 
-No noVNC, clique no canvas do jogo antes de jogar. `Ctrl` (atirar) não deve mais derrubar a sessão: o container ignora SIGPIPE e não sobe o `sndserver` OSS quebrado.
+No noVNC, clique no canvas do jogo antes de jogar (para capturar teclado e mouse). `Ctrl` (atirar) não deve mais derrubar a sessão: o container ignora SIGPIPE e não sobe o `sndserver` OSS quebrado.
 
-Se o browser roubar atalhos (`Ctrl+W`, etc.), clique de novo na área do jogo.
+Mouse: movimento horizontal vira; botão esquerdo atira. Se o cursor “escapar”, clique de novo na janela do Doom.
+
+Se o browser roubar atalhos (`Ctrl+W`, etc.), use o botão esquerdo do mouse para atirar.
 
 ## Limitações
 

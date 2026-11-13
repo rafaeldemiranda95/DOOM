@@ -153,13 +153,14 @@ int		key_down;
 int             key_strafeleft;
 int		key_straferight; 
 int             key_fire;
-int		key_use;
-int		key_strafe;
-int		key_speed; 
+	int		key_use;
+	int		key_strafe;
+	int		key_speed;
  
 int             mousebfire; 
 int             mousebstrafe; 
-int             mousebforward; 
+int             mousebforward;
+int		mouse_weapon_cycle;	// +1 next / -1 prev (mouse wheel) 
  
 int             joybfire; 
 int             joybstrafe; 
@@ -305,12 +306,12 @@ void G_BuildTiccmd (ticcmd_t* cmd)
 	    cmd->angleturn += angleturn[tspeed]; 
     } 
  
-    if (gamekeydown[key_up]) 
+    if (gamekeydown[key_up] || gamekeydown['w']) 
     {
 	// fprintf(stderr, "up\n");
 	forward += forwardmove[speed]; 
     }
-    if (gamekeydown[key_down]) 
+    if (gamekeydown[key_down] || gamekeydown['s']) 
     {
 	// fprintf(stderr, "down\n");
 	forward -= forwardmove[speed]; 
@@ -319,15 +320,16 @@ void G_BuildTiccmd (ticcmd_t* cmd)
 	forward += forwardmove[speed]; 
     if (joyymove > 0) 
 	forward -= forwardmove[speed]; 
-    if (gamekeydown[key_straferight]) 
+    if (gamekeydown[key_straferight] || gamekeydown['d']) 
 	side += sidemove[speed]; 
-    if (gamekeydown[key_strafeleft]) 
+    if (gamekeydown[key_strafeleft] || gamekeydown['a']) 
 	side -= sidemove[speed];
     
     // buttons
     cmd->chatchar = HU_dequeueChatChar(); 
  
-    if (gamekeydown[key_fire] || mousebuttons[mousebfire] 
+    if (gamekeydown[key_fire]
+	|| mousebuttons[mousebfire] 
 	|| joybuttons[joybfire]) 
 	cmd->buttons |= BT_ATTACK; 
  
@@ -346,6 +348,33 @@ void G_BuildTiccmd (ticcmd_t* cmd)
 	    cmd->buttons |= i<<BT_WEAPONSHIFT; 
 	    break; 
 	}
+
+    // mouse wheel: cycle owned weapons
+    if (mouse_weapon_cycle)
+    {
+	player_t*	player = &players[consoleplayer];
+	int		start = player->readyweapon;
+	int		w = start;
+	int		dir = mouse_weapon_cycle > 0 ? 1 : -1;
+
+	do
+	{
+	    w += dir;
+	    if (w < 0)
+		w = NUMWEAPONS - 1;
+	    else if (w >= NUMWEAPONS)
+		w = 0;
+
+	    if (player->weaponowned[w])
+	    {
+		cmd->buttons |= BT_CHANGE;
+		cmd->buttons |= w << BT_WEAPONSHIFT;
+		break;
+	    }
+	} while (w != start);
+
+	mouse_weapon_cycle = 0;
+    }
     
     // mouse
     if (mousebuttons[mousebforward]) 
@@ -402,7 +431,7 @@ void G_BuildTiccmd (ticcmd_t* cmd)
 	} 
     } 
  
-    forward += mousey; 
+    /* Mouse Y no longer walks (bad with mouse-turn). Only X turns. */
     if (strafe) 
 	side += mousex*2; 
     else 
